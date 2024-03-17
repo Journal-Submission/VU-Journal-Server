@@ -20,36 +20,53 @@ const registerSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    profilePicture: {
+        type: String,
+        default: "https://via.placeholder.com/150"
+    },
+    dateOfBirth: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
     email: {
         type: String,
         required: true,
         unique: true
+    },
+    emailVerified: {
+        type: Boolean,
+        default: false
     },
     phoneNumber: {
         type: Number,
         required: true,
         unique: true
     },
-    password: {
-        type: String,
-        required: true
-    },
     gender: {
         type: String,
         required: true
     },
-    superuser: {
+    password: {
+        type: String,
+        required: true
+    },
+    isEditor: {
         type: Boolean,
         default: false
     },
-    timestamp: {
+    isSuperAdmin: {
+        type: Boolean,
+        default: false
+    },
+    isReviewer: {
+        type: Boolean,
+        default: false
+    },
+    createdAt: {
         type: Date,
         default: Date.now
     },
-    journalIds :[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Submission"
-    }],
     tokens: [{
         token: {
             type: String,
@@ -60,8 +77,8 @@ const registerSchema = new mongoose.Schema({
 
 registerSchema.methods.generateAuthToken = async function () {
     try {
-        const token = jwt.sign({_id: this._id.toString()}, process.env.SECRET_KEY);
-        this.tokens = this.tokens.concat({token: token});
+        const token = jwt.sign({ _id: this._id.toString() }, process.env.SECRET_KEY);
+        this.tokens = this.tokens.concat({ token: token });
         await this.save();
         return token;
     } catch (error) {

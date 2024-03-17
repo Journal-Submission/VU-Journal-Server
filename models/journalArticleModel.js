@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 
-const subSchema = new mongoose.Schema({
+const journalArticleSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Register',
+        required: true
+    },
+    journalId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Journal',
         required: true
     },
     title: {
@@ -59,11 +64,40 @@ const subSchema = new mongoose.Schema({
         required: true,
         default: 'pending'
     },
-    timestamp: {
+    reviewers: [{
+        email: {
+            type: String,
+            required: true,
+            default: "No reviewers yet"
+        },
+        status: {
+            type: String,
+            required: true,
+            default: 'under review'
+        },
+        comment: {
+            type: String,
+            required: true,
+            default: "No comments yet"
+        },
+        reviewDate: {
+            type: Date,
+            default: Date.now
+        },
+        reviewed: {
+            type: Boolean,
+            default: false
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    createdAt: {
         type: Date,
         default: Date.now
     }
 });
 
-const Submission = mongoose.model('Submission', subSchema);
-module.exports = Submission;
+const JournalArticle = mongoose.model('JournalArticle', journalArticleSchema);
+module.exports = JournalArticle;
