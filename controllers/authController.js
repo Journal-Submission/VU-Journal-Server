@@ -51,6 +51,9 @@ const login = async (req, res) => {
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if (isMatch) {
+            if (!user.emailVerified) {
+                return res.status(400).send({ success: false, message: "Email not verified", data: { email: user.email, firstName: user.firstName, userName: user.userName } });
+            }
             const token = await user.generateAuthToken();
             const reviewer = await Reviewer.findOne({ email: user.email });
             if (reviewer) user.isReviewer = true;

@@ -10,14 +10,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: '*',
+    origin: 'http://localhost:8080',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 }));
 
 app.use('/', express.static('public'));
 
-app.use('/api', postRoute);
+app.use('/', postRoute);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Journal API');

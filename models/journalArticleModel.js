@@ -64,18 +64,26 @@ const journalArticleSchema = new mongoose.Schema({
         required: true,
         default: 'pending'
     },
+    finalStatus: {
+        type: String,
+        required: false,
+    },
+    editorComments: {
+        type: String,
+        required: true,
+        default: "No comments yet"
+    },
     reviewers: [{
         email: {
             type: String,
             required: true,
-            default: "No reviewers yet"
         },
         status: {
             type: String,
             required: true,
             default: 'under review'
         },
-        comment: {
+        comments: {
             type: String,
             required: true,
             default: "No comments yet"

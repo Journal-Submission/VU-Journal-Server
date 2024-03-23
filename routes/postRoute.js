@@ -28,5 +28,8 @@ router.post("/journal/add-reviewer", authenticate, verifyEditor, postController.
 router.post("/journal/add-bulk-reviewer", authenticate, verifyEditor, postController.addBulkReviewer);
 router.get("/journal/get-reviewer-list", authenticate, verifyEditor, postController.getReviewerList);
 router.get("/journal/get-review-articles", authenticate, verifyReviewer, postController.getReviewArticles);
+router.post("/journal/update-review", authenticate, verifyReviewer, postController.updateReview);
+router.get("/journal/delete-reviewer/:reviewerId", authenticate, verifyEditor, postController.deleteReviewer);
+router.post("/zip/create-zip", authenticate, verifyEditor, postController.createZip);
 
 module.exports = router;
