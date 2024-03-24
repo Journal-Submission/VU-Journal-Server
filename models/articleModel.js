@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const journalArticleSchema = new mongoose.Schema({
+const articleSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Register',
@@ -70,8 +70,8 @@ const journalArticleSchema = new mongoose.Schema({
     },
     editorComments: {
         type: String,
-        required: true,
-        default: "No comments yet"
+        required: false,
+        default: ""
     },
     reviewers: [{
         email: {
@@ -81,12 +81,12 @@ const journalArticleSchema = new mongoose.Schema({
         status: {
             type: String,
             required: true,
-            default: 'under review'
+            default: "Null"
         },
         comments: {
             type: String,
-            required: true,
-            default: "No comments yet"
+            required: false,
+            default: ""
         },
         reviewDate: {
             type: Date,
@@ -107,5 +107,5 @@ const journalArticleSchema = new mongoose.Schema({
     }
 });
 
-const JournalArticle = mongoose.model('JournalArticle', journalArticleSchema);
-module.exports = JournalArticle;
+const Article = mongoose.model('Article', articleSchema);
+module.exports = Article;

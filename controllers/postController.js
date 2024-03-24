@@ -1,4 +1,4 @@
-const JournalArticle = require('../models/journalArticleModel');
+const Article = require('../models/articleModel');
 const Journal = require('../models/journalModel');
 const Reviewer = require('../models/reviewerModel');
 const Auth = require('../models/authModel');
@@ -22,9 +22,9 @@ const fs = require('fs');
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - A promise that resolves when the journal article is added.
  */
-const addJournalArticle = async (req, res) => {
+const addArticle = async (req, res) => {
     try {
-        const journalArticle = new JournalArticle({
+        const article = new Article({
             userId: req.body.userId,
             title: req.body.title,
             abstract: req.body.abstract,
@@ -33,10 +33,10 @@ const addJournalArticle = async (req, res) => {
             authors: JSON.parse(req.body.authors),
             journalId: req.body.journalId,
         });
-        const responseData = await journalArticle.save();
-        res.status(201).json({ success: true, message: "Journal submitted successfully", data: responseData });
+        const responseData = await article.save();
+        res.status(201).json({ success: true, message: "Article submitted successfully", data: responseData });
     } catch (error) {
-        res.status(404).json({ success: false, message: "Journal submission failed", error: error });
+        res.status(404).json({ success: false, message: "Article submission failed", error: error });
     }
 }
 
@@ -46,14 +46,14 @@ const addJournalArticle = async (req, res) => {
  * @param {Object} res - The response object.
  * @returns {Object} The response object with the retrieved journal articles data.
  */
-const getJournalArticle = async (req, res) => {
+const getArticle = async (req, res) => {
     try {
-        const journalAData = await JournalArticle.find({ userId: req.user._id });
-        const otherJournalAData = await JournalArticle.find({ 'authors.email': req.user.email });
-        if (journalAData.length === 0 && otherJournalAData.length === 0) {
-            return res.status(404).json({ success: false, message: "You didn't submit any journal" });
+        const articles = await Article.find({ userId: req.user._id });
+        const otherArticles = await Article.find({ 'authors.email': req.user.email });
+        if (articles.length === 0 && otherArticles.length === 0) {
+            return res.status(404).json({ success: false, message: "You didn't submit any journal article" });
         }
-        res.status(200).json({ success: true, message: "Journal Articles data retrieved successfully", data: journalAData.concat(otherJournalAData.filter(item2 => !journalAData.some(item1 => item1.id === item2.id))) });
+        res.status(200).json({ success: true, message: "Journal Articles data retrieved successfully", data: articles.concat(otherArticles.filter(item2 => !articles.some(item1 => item1.id === item2.id))) });
     } catch (error) {
         res.status(404).json({ success: false, message: "Journal Articles data retrieval failed", error: error });
     }
@@ -143,11 +143,11 @@ const sendMail = async (req, res) => {
  */
 const getArticleList = async (req, res) => {
     try {
-        const journalAData = await JournalArticle.find({ journalId: req.params.journalId });
-        if (journalAData.length === 0) {
+        const articles = await Article.find({ journalId: req.params.journalId });
+        if (articles.length === 0) {
             return res.status(404).json({ success: false, message: "No journal articles found" });
         }
-        res.status(200).json({ success: true, message: "Journal Articles data retrieved successfully", data: journalAData });
+        res.status(200).json({ success: true, message: "Journal Articles data retrieved successfully", data: articles });
     } catch (error) {
         res.status(404).json({ success: false, message: "Journal Articles data retrieval failed", error: error });
     }
@@ -155,11 +155,11 @@ const getArticleList = async (req, res) => {
 
 const updateArticle = async (req, res) => {
     try {
-        const journalAData = await JournalArticle.findByIdAndUpdate(req.body._id, req.body, { new: true });
-        if (!journalAData) {
+        const article = await Article.findByIdAndUpdate(req.body._id, req.body, { new: true });
+        if (!article) {
             return res.status(404).json({ success: false, message: "Journal article not found" });
         }
-        res.status(200).json({ success: true, message: "Journal article updated successfully", data: journalAData });
+        res.status(200).json({ success: true, message: "Journal article updated successfully", data: article });
     } catch (error) {
         res.status(404).json({ success: false, message: "Journal article update failed", error: error });
     }
@@ -174,7 +174,7 @@ const updateArticle = async (req, res) => {
  */
 const updateReview = async (req, res) => {
     try {
-        const article = await JournalArticle.findById(req.body._id);
+        const article = await Article.findById(req.body._id);
         if (!article) {
             return res.status(404).json({ success: false, message: "Journal article not found" });
         }
@@ -227,7 +227,7 @@ const getReviewerList = async (req, res) => {
 
 const getReviewArticles = async (req, res) => {
     try {
-        const articles = await JournalArticle.find({ 'reviewers.email': req.user.email }).select('title createdAt file reviewers');
+        const articles = await Article.find({ 'reviewers.email': req.user.email }).select('title createdAt file reviewers');
         if (articles.length === 0) {
             return res.status(404).json({ success: false, message: "No review articles found" });
         }
@@ -276,8 +276,8 @@ const createZip = async (req, res) => {
 }
 
 module.exports = {
-    addJournalArticle,
-    getJournalArticle,
+    addArticle,
+    getArticle,
     sendMail,
     getJournalList,
     addJournal,
