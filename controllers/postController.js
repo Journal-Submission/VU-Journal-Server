@@ -120,7 +120,7 @@ const sendMail = async (req, res) => {
             from: req.body.mailFrom + " <" + process.env.EMAIL_HOST + ">",
             to: req.body.mailTo,
             subject: req.body.mailSubject,
-            text: req.body.mailText,
+            // text: req.body.mailText,
             html: req.body.mailHtml,
         });
 
