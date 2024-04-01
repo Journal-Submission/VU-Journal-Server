@@ -87,7 +87,7 @@ const checkUser = async (req, res) => {
         if (!user) {
             return res.status(400).json({ success: false, message: "User doesn't exist" });
         }
-        res.status(200).json({ success: true, message: "User exists" });
+        res.status(200).json({ success: true, message: "User exists", data: { email: user.email, firstName: user.firstName, userName: user.userName } });
     } catch (error) {
         res.status(500).json({ success: false, message: "User check failed", error: error });
     }

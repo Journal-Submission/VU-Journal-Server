@@ -200,8 +200,8 @@ const addReviewer = async (req, res) => {
             affiliation: req.body.affiliation,
         })
         const responseData = await reviewer.save();
-        res.status(201).json({ success: true, message: "Reviewer added successfully", data: responseData });
         await Auth.findOneAndUpdate({ email: req.body.email }, { $set: { isReviewer: true } }, { new: true });
+        res.status(201).json({ success: true, message: "Reviewer added successfully", data: responseData });
     } catch (error) {
         res.status(404).json({ success: false, message: "Reviewer addition failed", error: error });
     }
@@ -247,6 +247,7 @@ const deleteReviewer = async (req, res) => {
         if (!reviewerData) {
             return res.status(404).json({ success: false, message: "Reviewer not found" });
         }
+        await Auth.findOneAndUpdate({ email: reviewerData.email }, { $set: { isReviewer: false } }, { new: true });
         res.status(200).json({ success: true, message: "Reviewer deleted successfully" });
     } catch (error) {
         res.status(404).json({ success: false, message: "Reviewer deletion failed", error: error });
