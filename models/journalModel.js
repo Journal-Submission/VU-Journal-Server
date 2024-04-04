@@ -4,7 +4,6 @@ const journalSchema = new mongoose.Schema({
     editorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Register',
-        required: true
     },
     title: {
         type: String,

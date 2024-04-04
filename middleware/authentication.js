@@ -33,4 +33,12 @@ const verifyReviewer = (req, res, next) => {
     }
 }
 
-module.exports = { authenticate, verifyEditor, verifyReviewer };
+const verifySuperAdmin = (req, res, next) => {
+    if (req.user.isSuperAdmin) {
+        next();
+    } else {
+        res.status(403).json({ success: false, message: "Forbidden: Access denied" });
+    }
+}
+
+module.exports = { authenticate, verifyEditor, verifyReviewer, verifySuperAdmin };

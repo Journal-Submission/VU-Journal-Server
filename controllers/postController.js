@@ -63,7 +63,7 @@ const getArticle = async (req, res) => {
  * Add a new journal entry.
  * @param {Object} req - The request object.
  * @param {Object} req.body - The request body containing the journal details.
- * @param {string} req.body.userId - The ID of the user creating the journal entry.
+ * @param {string} req.body.editorId - The ID of the editor creating the journal entry.
  * @param {string} req.body.title - The title of the journal entry.
  * @param {string} req.body.description - The description of the journal entry.
  * @param {Object} res - The response object.
@@ -72,7 +72,6 @@ const getArticle = async (req, res) => {
 const addJournal = async (req, res) => {
     try {
         const journal = new Journal({
-            userId: req.body.userId,
             title: req.body.title,
             description: req.body.description,
         });
@@ -80,6 +79,14 @@ const addJournal = async (req, res) => {
         res.status(201).json({ success: true, message: "Journal added successfully", data: responseData });
     } catch (error) {
         res.status(404).json({ success: false, message: "Journal addition failed", error: error });
+    }
+}
+
+const deleteJournal = async (req, res) => {
+    try {
+        
+    } catch (error) {
+        
     }
 }
 
@@ -92,8 +99,8 @@ const addJournal = async (req, res) => {
  */
 const getJournalList = async (req, res) => {
     try {
-        const journalData = await Journal.find();
-        res.status(200).json({ success: true, message: "Journal data retrieved successfully", data: journalData });
+        const journalData = await Journal.find().populate('editorId', 'firstName lastName email');
+        res.status(200).json({ success: true, message: "Journal data retrieved successfully", data: journalData.map(journal => ({ ...journal.toObject(), editor: journal.editorId, editorId: journal.editorId ? journal.editorId._id : null })) });
     } catch (error) {
         res.status(404).json({ success: false, message: "Journal data retrieval failed", error: error });
     }
@@ -276,6 +283,47 @@ const createZip = async (req, res) => {
     }
 }
 
+const addEditor = async (req, res) => {
+    try {
+        const user = await Auth.findOne({ email: req.body.email });
+        if (user) {
+            return res.status(400).json({ success: false, message: "Editor already exists" });
+        }
+        const password = Math.random().toString(36).toUpperCase().slice(-10);
+        const userName = req.body.firstName.toLowerCase() + Math.floor(Math.random() * 1000);
+        const editor = await Auth({
+            firstName: req.body.firstName,
+            middleName: req.body.middleName,
+            lastName: req.body.lastName,
+            userName: userName,
+            email: req.body.email,
+            phoneNumber: req.body.phoneNumber,
+            password: password,
+            gender: req.body.gender,
+            isEditor: true
+        });
+        await editor.save();
+        await Journal.findByIdAndUpdate(req.body.journalId, { editorId: editor._id }, { new: true });
+        res.status(201).json({ success: true, message: "Editor added successfully", data: { password, userName } });
+    } catch (error) {
+        res.status(404).json({ success: false, message: "Editor addition failed", error: error });
+    }
+}
+
+const removeEditor = async (req, res) => {
+    try {
+        const journal = await Journal.findById(req.params.journalId);
+        if (!journal) {
+            return res.status(404).json({ success: false, message: "Journal not found" });
+        }
+        await Auth.findByIdAndDelete(journal.editorId);
+        await Journal.findByIdAndUpdate(req.params.journalId, { editorId: null }, { new: true });
+        res.status(200).json({ success: true, message: "Editor removed successfully" });
+    } catch (error) {
+        res.status(404).json({ success: false, message: "Editor removal failed", error: error });
+    }
+}
+
 module.exports = {
     addArticle,
     getArticle,
@@ -291,4 +339,6 @@ module.exports = {
     updateReview,
     deleteReviewer,
     createZip,
+    addEditor,
+    removeEditor
 }
