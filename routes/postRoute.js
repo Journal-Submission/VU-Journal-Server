@@ -19,6 +19,7 @@ router.post('/auth/verify-email', authController.verifyEmail);
 router.post('/auth/reset-password', authController.resetPassword);
 router.get('/journal/get-journal-list', postController.getJournalList);
 router.post('/journal/add-journal', authenticate, verifySuperAdmin, postController.addJournal);
+router.get('/journal/delete-journal/:journalId', authenticate, verifySuperAdmin, postController.deleteJournal);
 router.post('/auth/update-profile', authenticate, upload.single('profile-picture'), authController.updateProfile);
 router.post('/auth/check-user', authController.checkUser);
 router.get("/article/get-article-list/:journalId", postController.getArticleList);

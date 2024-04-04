@@ -84,9 +84,14 @@ const addJournal = async (req, res) => {
 
 const deleteJournal = async (req, res) => {
     try {
-        
+        const journalData = await Journal.findByIdAndDelete(req.params.journalId);
+        if (!journalData) {
+            return res.status(404).json({ success: false, message: "Journal not found" });
+        }
+        if (journalData.editorId) await Auth.findByIdAndDelete(journalData.editorId);
+        res.status(200).json({ success: true, message: "Journal deleted successfully" });
     } catch (error) {
-        
+        res.status(404).json({ success: false, message: "Journal deletion failed", error: error });
     }
 }
 
@@ -289,6 +294,10 @@ const addEditor = async (req, res) => {
         if (user) {
             return res.status(400).json({ success: false, message: "Editor already exists" });
         }
+        const userPhone = await Auth.findOne({ phoneNumber: req.body.phoneNumber });
+        if (userPhone) {
+            return res.status(400).json({ success: false, message: "Phone number already exists" });
+        }
         const password = Math.random().toString(36).toUpperCase().slice(-10);
         const userName = req.body.firstName.toLowerCase() + Math.floor(Math.random() * 1000);
         const editor = await Auth({
@@ -330,6 +339,7 @@ module.exports = {
     sendMail,
     getJournalList,
     addJournal,
+    deleteJournal,
     getArticleList,
     updateArticle,
     addReviewer,
