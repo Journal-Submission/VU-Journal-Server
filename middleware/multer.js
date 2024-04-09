@@ -4,13 +4,13 @@ const path = require('path');
 // Function to define storage for Journal files
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        if (path.extname(file.originalname) === '.pdf' || path.extname(file.originalname) === '.docx') {
+        if (['.pdf', '.docx'].includes(path.extname(file.originalname))) {
             callback(null, path.join(__dirname, '../public/journals/upload'), (err) => {
                 if (err) {
                     console.log(err);
                 }
             });
-        } else if (path.extname(file.originalname) === '.jpg' || path.extname(file.originalname) === '.jpeg' || path.extname(file.originalname) === '.png') {
+        } else if (['.jpg', '.jpeg', '.png'].includes(path.extname(file.originalname))) {
             callback(null, path.join(__dirname, '../public/profile-pictures/upload'), (err) => {
                 if (err) {
                     console.log(err);

@@ -27,7 +27,7 @@ const register = async (req, res) => {
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
             password: req.body.password,
-            gender: req.body.gender
+            institution: req.body.institution
         });
         // Generate auth token
         const token = await registerUser.generateAuthToken();
@@ -135,7 +135,7 @@ const updateProfile = async (req, res) => {
         user.email = req.body.email;
         user.phoneNumber = req.body.phoneNumber;
         user.dateOfBirth = req.body.dateOfBirth;
-        user.gender = req.body.gender;
+        user.institution = req.body.institution;
         user.profilePicture = !!req.file ? req.file.filename : req.user.profilePicture;
         await user.save();
         res.status(200).send({ success: true, message: "User profile updated successfully" });

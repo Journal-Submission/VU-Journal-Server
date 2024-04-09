@@ -46,23 +46,23 @@ const articleSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        correspondingAuthor: {
+            type: Boolean,
+            required: true
+        },
         firstAuthor: {
             type: Boolean,
             required: true
         },
-        secondAuthor: {
+        otherAuthor: {
             type: Boolean,
             required: true
-        },
-        correspondingAuthor: {
-            type: Boolean,
-            required: true
-        }
+        }  
     }],
     status: {
         type: String,
         required: true,
-        default: 'pending'
+        default: 'submitted'
     },
     finalStatus: {
         type: String,

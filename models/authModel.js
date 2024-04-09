@@ -43,7 +43,7 @@ const registerSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    gender: {
+    institution: {
         type: String,
         required: true
     },
