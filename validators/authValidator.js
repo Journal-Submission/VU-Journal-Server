@@ -25,7 +25,7 @@ const authValidator = {
         confPassword: z.string()
             .min(8, 'Password should be at least 8 characters long')
             .max(50, 'Password should be at most 50 characters long'),
-        gender: z.string().optional()
+        institution: z.string().optional()
     }),
 
     login: z.object({

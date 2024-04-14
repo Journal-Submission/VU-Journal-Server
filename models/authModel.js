@@ -45,7 +45,7 @@ const registerSchema = new mongoose.Schema({
     },
     institution: {
         type: String,
-        required: true
+        required: false
     },
     password: {
         type: String,

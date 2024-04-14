@@ -8,7 +8,7 @@ const validate = require('../middleware/validator');
 const { upload } = require('../middleware/multer');
 
 // Routes
-router.post('/article/add-article', authenticate, upload.single('journal-attachment'), postController.addArticle);
+router.post('/article/add-article', authenticate, upload.single('menuscript'), postController.addArticle);
 router.get('/article/get-article', authenticate, postController.getArticle);
 router.post('/auth/register', validate(authSchema.register), authController.register);
 router.post('/auth/login', validate(authSchema.login), authController.login);

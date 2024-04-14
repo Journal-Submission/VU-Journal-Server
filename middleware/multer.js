@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
                     console.log(err);
                 }
             });
-        } else if (['.jpg', '.jpeg', '.png'].includes(path.extname(file.originalname))) {
+        } else if (['.jpg', '.jpeg', '.png', 'gif'].includes(path.extname(file.originalname))) {
             callback(null, path.join(__dirname, '../public/profile-pictures/upload'), (err) => {
                 if (err) {
                     console.log(err);
