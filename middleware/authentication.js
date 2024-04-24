@@ -9,6 +9,9 @@ const authenticate = async (req, res, next) => {
         }
         const verifyUser = jwt.verify(token, process.env.SECRET_KEY);
         const user = await Auth.findOne({ _id: verifyUser._id }).select({ password: 0, tokens: 0 });
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Unauthorized: Invalid token" });
+        }
         req.token = token;
         req.user = user;
         next();

@@ -63,17 +63,13 @@ const registerSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
     tokens: [{
         token: {
             type: String,
             required: true
         }
     }]
-});
+}, { timestamps: true });
 
 registerSchema.methods.generateAuthToken = async function () {
     try {

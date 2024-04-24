@@ -15,9 +15,6 @@ const register = async (req, res) => {
     if (userName) {
         return res.status(400).json({ success: false, message: "Sorry a user with this username already exists" })
     }
-    if (req.body.password !== req.body.confPassword) {
-        return res.status(400).json({ success: false, message: "Password does not match" })
-    }
     try {
         const registerUser = new Auth({
             firstName: req.body.firstName,

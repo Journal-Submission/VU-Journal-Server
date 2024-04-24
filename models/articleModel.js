@@ -25,7 +25,19 @@ const articleSchema = new mongoose.Schema({
             required: true
         }
     ],
-    file: {
+    menuscript: {
+        type: String,
+        required: true
+    },
+    coverLetter: {
+        type: String,
+        required: true
+    },
+    supplementaryFile: {
+        type: String,
+        required: true
+    },
+    mergedScript: {
         type: String,
         required: true
     },
@@ -57,7 +69,7 @@ const articleSchema = new mongoose.Schema({
         otherAuthor: {
             type: Boolean,
             required: true
-        }  
+        }
     }],
     status: {
         type: String,
@@ -100,12 +112,8 @@ const articleSchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         }
-    }],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-});
+    }]
+}, { timestamps: true });
 
 const Article = mongoose.model('Article', articleSchema);
 module.exports = Article;

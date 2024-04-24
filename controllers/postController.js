@@ -29,7 +29,10 @@ const addArticle = async (req, res) => {
             title: req.body.title,
             abstract: req.body.abstract,
             keywords: JSON.parse(req.body.keywords),
-            file: req.file.filename,
+            menuscript: req.files.menuscript[0].filename,
+            coverLetter: req.files.coverLetter[0].filename,
+            supplementaryFile: req.files.supplementaryFile[0].filename,
+            mergedScript: req.files.mergedScript[0].filename,
             authors: JSON.parse(req.body.authors),
             journalId: req.body.journalId,
         });
@@ -271,21 +274,32 @@ const createZip = async (req, res) => {
     try {
         const files = req.body.files;
         files.forEach(file => {
-            zip.file(file, fs.readFileSync(`public/journals/upload/${file}`));
+            zip.file(file, fs.readFileSync(`public/articles/merged-script/${file}`));
         });
         const filename = new Date().getTime();
         zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
-            .pipe(fs.createWriteStream(`public/journals/zip/${filename}.zip`))
+            .pipe(fs.createWriteStream(`public/articles/zip-files/${filename}.zip`))
             .on('finish', function () {
                 res.status(200).json({ success: true, message: "Zip file created successfully", filename: `${filename}.zip` });
             });
 
         setTimeout(() => {
-            fs.unlinkSync(`public/journals/zip/${filename}.zip`);
+            fs.unlinkSync(`public/articles/zip-files/${filename}.zip`);
         }, 60000);
     } catch (error) {
         res.status(404).json({ success: false, message: "Zip file creation failed", error: error });
     }
+}
+
+const downloadZip = async (req, res) => {
+    const filename = req.params.filename;
+    res.download(`public/articles/zip-files/${filename}`, filename, (err) => {
+        if (err) {
+            res.status(404).json({ success: false, message: "Zip file download failed", error: err });
+        } else {
+            fs.unlinkSync(`public/articles/zip-files/${filename}`);
+        }
+    });
 }
 
 const addEditor = async (req, res) => {
@@ -349,6 +363,7 @@ module.exports = {
     updateReview,
     deleteReviewer,
     createZip,
+    downloadZip,
     addEditor,
     removeEditor
 }
