@@ -38,6 +38,7 @@ const addArticle = async (req, res) => {
         });
         const responseData = await article.save();
         res.status(201).json({ success: true, message: "Article submitted successfully", data: responseData });
+        // const journal = await Journal.findById(req.body.journalId).populate('editorId');
     } catch (error) {
         res.status(404).json({ success: false, message: "Article submission failed", error: error });
     }
@@ -329,6 +330,8 @@ const addEditor = async (req, res) => {
             gender: req.body.gender,
             isEditor: true
         });
+        const journal = await Journal.findById(req.body.journalId);
+        if (journal.editorId) await Auth.findByIdAndDelete(journal.editorId);
         await editor.save();
         await Journal.findByIdAndUpdate(req.body.journalId, { editorId: editor._id }, { new: true });
         res.status(201).json({ success: true, message: "Editor added successfully", data: { password, userName } });
