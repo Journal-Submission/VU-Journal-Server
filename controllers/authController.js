@@ -16,6 +16,7 @@ const register = async (req, res) => {
         return res.status(400).json({ success: false, message: "Sorry a user with this username already exists" })
     }
     try {
+        const reviewer = await Reviewer.findOne({ email: req.body.email });
         const registerUser = new Auth({
             firstName: req.body.firstName,
             middleName: req.body.middleName,
@@ -24,7 +25,8 @@ const register = async (req, res) => {
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
             password: req.body.password,
-            institution: req.body.institution
+            institution: req.body.institution,
+            isReviewer: !!reviewer,
         });
         // Generate auth token
         const token = await registerUser.generateAuthToken();
@@ -52,8 +54,6 @@ const login = async (req, res) => {
                 return res.status(400).send({ success: false, message: "Email not verified", data: { email: user.email, firstName: user.firstName, userName: user.userName } });
             }
             const token = await user.generateAuthToken();
-            const reviewer = await Reviewer.findOne({ email: user.email });
-            if (reviewer) user.isReviewer = true;
             res.status(200).json({ success: true, message: "User logged in successfully", data: user, accessToken: token });
         } else {
             res.status(400).json({ success: false, message: "Invalid Password" });

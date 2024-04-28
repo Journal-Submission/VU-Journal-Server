@@ -224,7 +224,11 @@ const addReviewer = async (req, res) => {
 
 const addBulkReviewer = async (req, res) => {
     try {
-        const responseData = await Reviewer.insertMany(req.body);
+        const reviewers = req.body.reviewers;
+        const reviewerData = await Reviewer.find();
+        const reviewerEmails = reviewerData.map(reviewer => reviewer.email);
+        const newReviewers = reviewers.filter(reviewer => !reviewerEmails.includes(reviewer.email));
+        const responseData = await Reviewer.insertMany(newReviewers);
         res.status(201).json({ success: true, message: "Reviewers added successfully", data: responseData });
     } catch (error) {
         res.status(404).json({ success: false, message: "Reviewers addition failed", error: error });
