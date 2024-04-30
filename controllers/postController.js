@@ -6,7 +6,6 @@ const nodemailer = require("nodemailer");
 const JSZip = require('jszip');
 const fs = require('fs');
 
-
 /**
  * Add a new journal article.
  *
@@ -37,8 +36,8 @@ const addArticle = async (req, res) => {
             journalId: req.body.journalId,
         });
         const responseData = await article.save();
-        res.status(201).json({ success: true, message: "Article submitted successfully", data: responseData });
-        // const journal = await Journal.findById(req.body.journalId).populate('editorId');
+        const journal = await Journal.findById(req.body.journalId).populate('editorId');
+        res.status(201).json({ success: true, message: "Article submitted successfully", data: responseData, editorMail: journal.editorId ? journal.editorId.email : null });
     } catch (error) {
         res.status(404).json({ success: false, message: "Article submission failed", error: error });
     }
@@ -52,8 +51,8 @@ const addArticle = async (req, res) => {
  */
 const getArticle = async (req, res) => {
     try {
-        const articles = await Article.find({ userId: req.user._id });
-        const otherArticles = await Article.find({ 'authors.email': req.user.email });
+        const articles = await Article.find({ userId: req.user._id }).populate('userId', 'firstName middleName lastName profilePicture');
+        const otherArticles = await Article.find({ 'authors.email': req.user.email }).populate('userId', 'firstName middleName lastName profilePicture');
         if (articles.length === 0 && otherArticles.length === 0) {
             return res.status(404).json({ success: false, message: "You didn't submit any journal article" });
         }
@@ -130,7 +129,7 @@ const sendMail = async (req, res) => {
             pass: process.env.EMAIL_HOST_PASSWORD,
         },
     });
-
+    
     try {
         const info = await transporter.sendMail({
             from: req.body.mailFrom + " <" + process.env.EMAIL_HOST + ">",
@@ -159,7 +158,7 @@ const sendMail = async (req, res) => {
  */
 const getArticleList = async (req, res) => {
     try {
-        const articles = await Article.find({ journalId: req.params.journalId });
+        const articles = await Article.find({ journalId: req.params.journalId }).populate('userId', 'firstName middleName lastName email profilePicture');
         if (articles.length === 0) {
             return res.status(404).json({ success: false, message: "No journal articles found" });
         }
@@ -229,7 +228,12 @@ const addBulkReviewer = async (req, res) => {
         const reviewerData = await Reviewer.find();
         const reviewerEmails = reviewerData.map(reviewer => reviewer.email);
         const newReviewers = reviewers.filter(reviewer => !reviewerEmails.includes(reviewer.email));
-        const responseData = await Reviewer.insertMany(newReviewers);
+        // check the valid fields and insert only those fields
+        const filteredReviewers = newReviewers.filter(reviewer => reviewer.email && reviewer.firstName && reviewer.lastName && reviewer.affiliation);
+        if (filteredReviewers.length === 0) {
+            return res.status(400).json({ success: false, message: "All reviewers already exists" });
+        }
+        const responseData = await Reviewer.insertMany(filteredReviewers);
         res.status(201).json({ success: true, message: "Reviewers added successfully", data: responseData });
     } catch (error) {
         res.status(404).json({ success: false, message: "Reviewers addition failed", error: error });
