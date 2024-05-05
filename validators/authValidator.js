@@ -1,5 +1,9 @@
 const { z } = require('zod');
 
+/**
+ * Validator object for authentication related operations.
+ * @type {Object}
+ */
 const authValidator = {
     register: z.object({
         firstName: z.string().trim()

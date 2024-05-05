@@ -2,6 +2,22 @@ const Auth = require('../models/authModel');
 const bcrypt = require("bcryptjs");
 const Reviewer = require('../models/reviewerModel');
 
+/**
+ * Registers a new user.
+ * 
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.firstName - The first name of the user.
+ * @param {string} req.body.middleName - The middle name of the user.
+ * @param {string} req.body.lastName - The last name of the user.
+ * @param {string} req.body.userName - The username of the user.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.phoneNumber - The phone number of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @param {string} req.body.institution - The institution of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the user is registered.
+ */
 const register = async (req, res) => {
     let userEmail = await Auth.findOne({ email: req.body.email });
     if (userEmail) {
@@ -37,6 +53,15 @@ const register = async (req, res) => {
     }
 }
 
+/**
+ * Logs in a user with the provided username and password.
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.userName - The username of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves once the login process is complete.
+ */
 const login = async (req, res) => {
     try {
         const username = req.body.userName;
@@ -64,6 +89,15 @@ const login = async (req, res) => {
     }
 }
 
+/**
+ * Verifies the email of a user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.email - The email of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the email is verified.
+ */
 const verifyEmail = async (req, res) => {
     try {
         const user = await Auth.findOne({ email: req.body.email });
@@ -78,6 +112,15 @@ const verifyEmail = async (req, res) => {
     }
 }
 
+/**
+ * Check if a user exists based on the provided email or username.
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.userName - The username of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves once the user check is complete.
+ */
 const checkUser = async (req, res) => {
     try {
         const user = await Auth.findOne({ email: req.body.email }) || await Auth.findOne({ userName: req.body.userName });
@@ -90,6 +133,16 @@ const checkUser = async (req, res) => {
     }
 }
 
+/**
+ * Resets the password for a user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.password - The new password for the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the password is reset.
+ */
 const resetPassword = async (req, res) => {
     try {
         const user = await Auth.findOne({ email: req.body.email });
@@ -101,6 +154,16 @@ const resetPassword = async (req, res) => {
     }
 }
 
+/**
+ * Logs out the user by removing the token from the user's tokens array,
+ * clearing the access token cookie, and saving the user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.user - The user object.
+ * @param {Object} req.token - The token object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the user is logged out.
+ */
 const logout = async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
@@ -114,6 +177,13 @@ const logout = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves the user profile.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the user profile is retrieved.
+ */
 const userProfile = async (req, res) => {
     try {
         res.status(200).send({ success: true, message: "User profile retrieved successfully", data: req.user });
@@ -122,6 +192,27 @@ const userProfile = async (req, res) => {
     }
 }
 
+/**
+ * Updates the user profile.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.firstName - The first name of the user.
+ * @param {string} req.body.middleName - The middle name of the user.
+ * @param {string} req.body.lastName - The last name of the user.
+ * @param {string} req.body.userName - The username of the user.
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.phoneNumber - The phone number of the user.
+ * @param {string} req.body.dateOfBirth - The date of birth of the user.
+ * @param {string} req.body.institution - The institution of the user.
+ * @param {Object} req.file - The file object.
+ * @param {string} req.file.filename - The file name.
+ * @param {Object} req.user - The user object.
+ * @param {Object} req.user._id - The user ID.
+ * @param {Object} req.user.profilePicture - The profile picture of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the user profile is updated.
+ */
 const updateProfile = async (req, res) => {
     try {
         const user = await Auth.findOne({ _id: req.user._id });
@@ -141,6 +232,13 @@ const updateProfile = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves a list of users.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the user list is retrieved.
+ */
 const userList = async (req, res) => {
     try {
         const users = await Auth.find({}, '_id firstName middleName lastName');
