@@ -85,6 +85,15 @@ const addJournal = async (req, res) => {
     }
 }
 
+/**
+ * Deletes a journal by its ID.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.journalId - The ID of the journal to delete.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object.
+ */
 const deleteJournal = async (req, res) => {
     try {
         const journalData = await Journal.findByIdAndDelete(req.params.journalId);
@@ -153,6 +162,8 @@ const sendMail = async (req, res) => {
  * Retrieves a list of journal articles based on the provided journal ID.
  *
  * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.journalId - The ID of the journal to retrieve articles for.
  * @param {Object} res - The response object.
  * @returns {Promise<void>} - A promise that resolves once the articles are retrieved.
  */
@@ -168,6 +179,15 @@ const getArticleList = async (req, res) => {
     }
 }
 
+/**
+ * Updates a journal article.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body._id - The ID of the article to update.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the article is updated.
+ */
 const updateArticle = async (req, res) => {
     try {
         const article = await Article.findByIdAndUpdate(req.body._id, req.body, { new: true });
@@ -202,6 +222,17 @@ const updateReview = async (req, res) => {
     }
 }
 
+/**
+ * Add a new reviewer.
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body containing the reviewer details.
+ * @param {string} req.body.firstName - The first name of the reviewer.
+ * @param {string} req.body.lastName - The last name of the reviewer.
+ * @param {string} req.body.email - The email of the reviewer.
+ * @param {string} req.body.affiliation - The affiliation of the reviewer.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the reviewer is added.
+ */
 const addReviewer = async (req, res) => {
     const reviewerData = await Reviewer.findOne({ email: req.body.email });
     if (reviewerData) {
@@ -222,6 +253,19 @@ const addReviewer = async (req, res) => {
     }
 }
 
+/**
+ * Add bulk reviewers to the system.
+ * 
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body containing the reviewers details.
+ * @param {Object[]} req.body.reviewers - The reviewers to add.
+ * @param {string} req.body.reviewers[].firstName - The first name of the reviewer.
+ * @param {string} req.body.reviewers[].lastName - The last name of the reviewer.
+ * @param {string} req.body.reviewers[].email - The email of the reviewer.
+ * @param {string} req.body.reviewers[].affiliation - The affiliation of the reviewer.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
 const addBulkReviewer = async (req, res) => {
     try {
         const reviewers = req.body.reviewers;
@@ -249,6 +293,15 @@ const getReviewerList = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves review articles based on the user's email.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.user - The user object.
+ * @param {string} req.user.email - The email of the user.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the articles are retrieved.
+ */
 const getReviewArticles = async (req, res) => {
     try {
         const articles = await Article.find({ 'reviewers.email': req.user.email }).select('title createdAt mergedScript reviewers');
@@ -265,6 +318,15 @@ const getReviewArticles = async (req, res) => {
     }
 }
 
+/**
+ * Deletes a reviewer by their ID.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.reviewerId - The ID of the reviewer to delete.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object.
+ */
 const deleteReviewer = async (req, res) => {
     try {
         const reviewerData = await Reviewer.findByIdAndDelete(req.params.reviewerId);
@@ -278,6 +340,14 @@ const deleteReviewer = async (req, res) => {
     }
 }
 
+/**
+ * Creates a zip file containing the specified files.
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body containing the files to zip.
+ * @param {string[]} req.body.files - The files to zip.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the zip file is created.
+ */
 const createZip = async (req, res) => {
     const zip = new JSZip();
     try {
@@ -311,6 +381,21 @@ const downloadZip = async (req, res) => {
     });
 }
 
+/**
+ * Adds an editor to the system.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {string} req.body.firstName - The first name of the editor.
+ * @param {string} req.body.middleName - The middle name of the editor.
+ * @param {string} req.body.lastName - The last name of the editor.
+ * @param {string} req.body.email - The email of the editor.
+ * @param {string} req.body.phoneNumber - The phone number of the editor.
+ * @param {string} req.body.institution - The institution of the editor.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the editor is added successfully.
+ * @throws {Error} - If there is an error while adding the editor.
+ */
 const addEditor = async (req, res) => {
     try {
         const user = await Auth.findOne({ email: req.body.email });
@@ -331,7 +416,7 @@ const addEditor = async (req, res) => {
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
             password: password,
-            gender: req.body.gender,
+            institution: req.body.institution,
             isEditor: true
         });
         const journal = await Journal.findById(req.body.journalId);
@@ -344,6 +429,14 @@ const addEditor = async (req, res) => {
     }
 }
 
+/**
+ * Removes the editor from a journal and updates the journal's editorId field.
+ * @param {Object} req - The request object.
+ * @param {Object} req.params - The request parameters.
+ * @param {string} req.params.journalId - The ID of the journal to remove the editor from.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} - A promise that resolves when the editor is successfully removed.
+ */
 const removeEditor = async (req, res) => {
     try {
         const journal = await Journal.findById(req.params.journalId);

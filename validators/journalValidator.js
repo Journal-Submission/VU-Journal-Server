@@ -1,5 +1,9 @@
 const { z } = require('zod');
 
+/**
+ * Validator object for journal data.
+ * @type {Object}
+ */
 const journalValidator = {
     addJournal: z.object({
         title: z.string().trim()
