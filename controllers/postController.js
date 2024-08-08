@@ -251,7 +251,7 @@ const getReviewerList = async (req, res) => {
 
 const getReviewArticles = async (req, res) => {
     try {
-        const articles = await Article.find({ 'reviewers.email': req.user.email }).select('title createdAt file reviewers');
+        const articles = await Article.find({ 'reviewers.email': req.user.email }).select('title createdAt mergedScript reviewers');
         if (articles.length === 0) {
             return res.status(404).json({ success: false, message: "No review articles found" });
         }
