@@ -132,13 +132,24 @@ const getJournalList = async (req, res) => {
  */
 const sendMail = async (req, res) => {
     const transporter = nodemailer.createTransport({
-        service: "gmail",
+        // service: "gmail",
+        // auth: {
+        //     user: process.env.EMAIL_HOST,
+        //     pass: process.env.EMAIL_HOST_PASSWORD,
+        // },
+        service: 'Hostinger', // Can be left as 'smtp.hostinger.com'
+        host: 'smtp.hostinger.com', // Use your SMTP server address
+        port: 587, // Use port 587 for TLS or 465 for SSL
+        secure: false, // Set to true for SSL, false for TLS
         auth: {
-            user: process.env.EMAIL_HOST,
-            pass: process.env.EMAIL_HOST_PASSWORD,
+            user: process.env.EMAIL_HOST, // Your Hostinger email address
+            pass: process.env.EMAIL_HOST_PASSWORD, // The email account password
+        },
+        tls: {
+            rejectUnauthorized: false, // Needed for some environments (optional)
         },
     });
-    
+
     try {
         const info = await transporter.sendMail({
             from: req.body.mailFrom + " <" + process.env.EMAIL_HOST + ">",
